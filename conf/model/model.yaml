@@ -1,0 +1,11 @@
+in_dim: 2000
+in_dim2: 224
+dropout: 0.0
+hidden_dim_2: 12
+out_dim: 12
+factor: 1
+
+multimodal: True
+integrate: add
+predict_only_rna: False
+predict_projection: False 

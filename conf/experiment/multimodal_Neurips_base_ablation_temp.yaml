@@ -1,0 +1,19 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 22)
+      +model: nnclr, moco, simclr
+      +data: neurips_cite_multimodal
+      +augmentation: clear_pipeline
+      model.integrate: concat
+      model.predict_only_rna: False
+      model.predict_projection: False
+      model.in_dim2: 134
+      model.temperature: 0.1, 0.5, 1.0, 5.0, 10.0
+      logging.project: architecture-ablation_vol3
+  job:
+    name: ${random_seed}  # Set the job name to the model name
+  sweep:
+    dir: temperature/
+    subdir: ${data.dname}/${model.model}/base/temp_${model.temperature}/${random_seed}

@@ -1,0 +1,16 @@
+defaults:
+  - model.yaml
+
+model: MoCo
+factor: 1
+hidden_dim: 64
+memory_bank_size: 2048
+temperature: 0.5
+
+training:
+  max_epochs: 200
+  batch_size: 256
+  lr: 0.0001
+  weight_decay: 0.000001
+
+# hidden_dim_2

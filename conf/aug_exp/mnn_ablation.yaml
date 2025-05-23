@@ -1,0 +1,23 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 25)
+      model.hidden_dim: 64
+      model.training.max_epochs: 200
+      +model: barlowtwins, byol, moco, nnclr, simclr, simsiam, vicreg
+      +data: mouse
+      data.n_hvgs: 4000
+      ++model.multimodal: False
+      model.predict_projection: False
+      +augmentation: clear_pipeline
+      augmentation.mnn.apply_prob: 0.5
+      augmentation.crossover.apply_prob: 0
+      augmentation.mnn.alpha: choice(0.1, 0.3, 0.5, 0.7, 0.9)
+      augmentation.mnn.knn: choice(3, 5)
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}
+  sweep:
+    dir: ablation-db-2/augmentation-ablation/
+    subdir: ${data.dname}/mnn/${augmentation.mnn.alpha}/${augmentation.mnn.knn}/${model.model}/${random_seed}

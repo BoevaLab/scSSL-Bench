@@ -1,0 +1,18 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: 40
+      model.dropout: 0.2
+      +model: concerto
+      +data: immune, pbmc_2_donor
+      +augmentation: base
+      model.training.max_epochs: 3
+      augmentation.gauss.apply_prob: 0.5
+      augmentation.gauss.noise_percentage: 0.4
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}  # Set the job name to the model name
+  sweep:
+    dir: augmentation-ablation-volConcerto/
+    subdir: ${data.dname}/${model.model}/gauss-${augmentation.gauss.noise_percentage}/${random_seed}

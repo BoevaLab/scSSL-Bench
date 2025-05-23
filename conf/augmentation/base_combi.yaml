@@ -1,0 +1,32 @@
+name: null
+
+mnn:
+  alpha: 0.5
+  apply_prob: 0
+  knn: 5
+  augment_set: ['int']
+  nsize: 1
+
+bbknn:
+  alpha: 0.3
+  apply_prob: 0
+  knn: 5
+  augment_set: ['exc']
+  nsize: 1
+
+gauss:
+  sigma: 0.2
+  noise_percentage: 0.3
+  apply_prob: 0
+
+mask:
+  mask_percentage: 0.5
+  apply_prob: 0
+
+innerswap:
+  swap_percentage: 0.3
+  apply_prob: 0
+
+crossover:
+  cross_percentage: 0.25
+  apply_prob: 0

@@ -1,0 +1,16 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 25)
+      augmentation.gauss.apply_prob: 0.5
+      augmentation.gauss.noise_percentage: 0.4
+      +model: moco, simsiam, simclr # set the hidden dims in this config file. model.hidden_dim = ???
+      +data: immune
+      +augmentation: base
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${model.model}-${data.dname}  # Set the job name to the model name
+  sweep:
+    dir: augmentation-ablation-vol2/
+    subdir: ${data.dname}/${model.model}/gauss-${augmentation.gauss.noise_percentage}/${random_seed}

@@ -1,0 +1,12 @@
+defaults:
+  - model.yaml
+
+model: BarlowTwins
+hidden_dim: 64
+factor: 4
+
+training:
+  max_epochs: 200
+  batch_size: 256
+  lr: 0.0001
+  weight_decay: 0.000001

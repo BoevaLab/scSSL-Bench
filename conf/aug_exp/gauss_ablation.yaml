@@ -1,0 +1,19 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 22)
+      model.hidden_dim: 64
+      model.training.max_epochs: 200
+      +model: moco, simclr, vicreg
+      +data: mouse, immune
+      data.n_hvgs: 4000
+      ++model.multimodal: False
+      model.predict_projection: False
+      +augmentation: clear_pipeline
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}
+  sweep:
+    dir: ablation-db-2/augmentation-ablation/
+    subdir: ${data.dname}/gauss/${augmentation.gauss.noise_percentage}/${augmentation.gauss.sigma}/${model.model}/${random_seed}

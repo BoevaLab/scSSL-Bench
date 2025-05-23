@@ -1,0 +1,19 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 22)
+      model.hidden_dim: choice(8, 16, 32, 64, 128, 256, 512)
+      model.training.max_epochs: 200
+      +model: moco
+      +data: mouse, immune
+      ++model.multimodal: False
+      model.predict_projection: False
+      data.n_hvgs: 4000
+      +augmentation: clear_pipeline
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}
+  sweep:
+    dir: repr_dims_5h/
+    subdir: ${data.dname}/${model.model}/${model.hidden_dim}/${random_seed}

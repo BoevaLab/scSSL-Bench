@@ -1,0 +1,19 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 23)
+      model.hidden_dim: 64
+      model.training.max_epochs: 100
+      +model: barlowtwins, byol, moco, nnclr, simclr, simsiam, vicreg
+      +data: immune_atlas
+      ++model.multimodal: False
+      data.n_hvgs: 4000
+      data.holdout_batch: ["10x 5' v2"]
+      +augmentation: clear_pipeline
+      logging.project: architecture-ablation_vol4
+  job:
+    name: ${random_seed}
+  sweep:
+    dir: qr/
+    subdir: ${data.dname}/${model.model}/${random_seed}

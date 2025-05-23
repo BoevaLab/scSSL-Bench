@@ -1,0 +1,17 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: 40
+      model.dropout: 0.2
+      +model: concerto
+      model.training.max_epochs: 3
+      +data: pbmc_2_donor
+      data.holdout_batch: ['Batch1']
+      +augmentation: base
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}  # Set the job name to the model name
+  sweep:
+    dir: qr-ablation-vol0/
+    subdir: ${data.dname}/${model.model}/${random_seed}

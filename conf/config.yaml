@@ -1,0 +1,12 @@
+defaults:
+  - _self_
+
+random_seed: 0
+results_dir: ${hydra:runtime.output_dir}
+
+debug: false
+
+logging:
+  project: scAugmentBench
+  mode: offline
+  entity: tomap

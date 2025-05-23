@@ -1,0 +1,16 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 23)
+      +model: barlowtwins, byol, moco, vicreg, simclr, nnclr, simsiam
+      model.training.max_epochs: choice(20, 50, 100, 150, 200)
+      +data: immune, mouse
+      +augmentation: clear_pipeline
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}  # Set the job name to the model name
+  sweep:
+    dir: dimension-ablation-vol-epochs/
+    subdir: ${data.dname}/${model.model}/${model.training.max_epochs}/${random_seed}
+    

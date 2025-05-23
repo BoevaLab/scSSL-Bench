@@ -1,0 +1,5 @@
+defaults:
+  - data.yaml
+
+data_path: "../own_model/CLAIRE-data/Neocortex"
+dname: "Neocortex"

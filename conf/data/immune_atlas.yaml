@@ -1,0 +1,5 @@
+defaults:
+  - data.yaml
+
+data_path: "/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmuneAtlas"
+dname: "ImmuneAtlas"

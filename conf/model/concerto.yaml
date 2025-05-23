@@ -1,0 +1,14 @@
+defaults:
+  - model.yaml
+
+model: Concerto
+out_dim: 128
+hidden_dim: 128
+dropout: 0.2
+vocabulary_size: 10
+
+training:
+  max_epochs: 5
+  batch_size: 32
+  lr: 0.0001
+  weight_decay: 0.000001

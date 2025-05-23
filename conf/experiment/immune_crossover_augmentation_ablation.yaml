@@ -1,0 +1,16 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 25)
+      augmentation.crossover.apply_prob: 0.5
+      augmentation.crossover.cross_percentage: 0.6
+      +model: moco, simsiam, simclr
+      +data: immune
+      +augmentation: base
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${model.model}-${data.dname}  # Set the job name to the model name
+  sweep:
+    dir: augmentation-ablation-vol4/
+    subdir: ${data.dname}/${model.model}/crossover-${augmentation.crossover.cross_percentage}/${random_seed}

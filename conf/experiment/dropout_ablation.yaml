@@ -1,0 +1,15 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 25)
+      model.dropout: choice(0.15, 0.2)
+      +model: nnclr
+      +data: immune
+      +augmentation: base
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${model.model}-${data.dname}  # Set the job name to the model name
+  sweep:
+    dir: augmentation-ablation-volXXX/
+    subdir: ${data.dname}/${model.model}/dropout-${model.dropout}/${random_seed}

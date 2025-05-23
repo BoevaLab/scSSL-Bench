@@ -1,0 +1,19 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 25)
+      +model: simclr, moco, simsiam, vicreg, nnclr, byol, barlowtwins
+      +data: pbmc_multimodal
+      +augmentation: our_pipeline
+      model.integrate: add, concat, clip
+      model.predict_only_rna: False
+      model.predict_projection: False
+      data.holdout_batch: ["P3", "P5", "P8"]
+      logging.project: architecture-ablation_vol4
+      model.hidden_dim: 64
+  job:
+    name: ${random_seed}  # Set the job name to the model name
+  sweep:
+    dir: augmentation-ablation-vol4/
+    subdir: ${data.dname}/${model.model}_qr/our/integrate_${model.integrate}_RNA_${model.predict_only_rna}_projection_${model.predict_projection}/${random_seed}

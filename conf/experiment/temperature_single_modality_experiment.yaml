@@ -1,0 +1,19 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 22)
+      +model: nnclr, moco, simclr
+      +data: mouse, immune # pancreas, lung, pbmc, immune, immune_atlas
+      +augmentation: clear_pipeline
+      model.hidden_dim: 64
+      model.training.max_epochs: 200
+      ++model.temperature: 0.1, 0.5, 1.0, 5.0, 10.0
+      ++model.multimodal: False
+      data.n_hvgs: 4000
+      logging.project: architecture-ablation_vol4
+  job:
+    name: ${random_seed}
+  sweep:
+    dir: temperature/
+    subdir: ${data.dname}/${model.model}/base/temp_${model.temperature}/${random_seed}

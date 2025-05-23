@@ -1,0 +1,17 @@
+# @package _global_
+hydra:
+  sweeper:
+    params:
+      random_seed: range(20, 25)
+      augmentation.bbknn.apply_prob: 0.5
+      augmentation.bbknn.alpha: 0.7
+      augmentation.bbknn.knn: choice(3, 5, 7)
+      +model: moco, simsiam, simclr
+      +data: immune
+      +augmentation: base
+      logging.project: architecture-ablation_vol1
+  job:
+    name: ${random_seed}  # Set the job name to the model name
+  sweep:
+    dir: augmentation-ablation-vol9/
+    subdir: ${data.dname}/${model.model}/bbknn-${augmentation.bbknn.knn}/${random_seed}
