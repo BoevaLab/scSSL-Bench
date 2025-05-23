@@ -2,7 +2,7 @@
 hydra:
   sweeper:
     params:
-      random_seed: range(20, 22)
+      random_seed: range(21, 22)
       +model: simclr, moco, simsiam, vicreg, nnclr, byol, barlowtwins
       +data: neurips_cite_multimodal
       data.holdout_batch: ["s4d1", "s4d8", "s4d9"]

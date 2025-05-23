@@ -26,7 +26,7 @@ class OurDataset(Dataset):
         return self.n_samples
 
     def __getitem__(self, index):
-        #index = self.valid_cellidx[i]
+        bid = self.adata.obs["batch"].iloc[index]
         x = self.X[index].unsqueeze(0)
         if self.transforms is not None:
             """
@@ -34,9 +34,9 @@ class OurDataset(Dataset):
             """
             #out_dict = self.transforms({'x1': x, 'x2': x, 'cell_ids': torch.from_numpy(np.array([index]))})
             out_dict = self.transforms({'x1': x, 'x2': x, 'cell_ids': index})
-            return [out_dict['x1'].squeeze().float(), out_dict['x2'].squeeze().float()], [index, index] #out_dict['x1'], out_dict['x2'], index
+            return [out_dict['x1'].squeeze().float(), out_dict['x2'].squeeze().float()], [index, index], [bid, bid] #out_dict['x1'], out_dict['x2'], index
         else:
-            return x.squeeze().float(), index
+            return x.squeeze().float(), index, bid
 
 
 class OurMultimodalDataset(Dataset):

@@ -1,5 +1,5 @@
 defaults:
   - data.yaml
 
-data_path: "/home/baunsgaard/scBench/scButterfly/Olga_Data/Neurips_cite_multimodal"
+data_path: "/home/oovcharenko/Olga_Data/Neurips_cite_multimodal"
 dname: "Neurips-Multiome"

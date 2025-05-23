@@ -838,7 +838,10 @@ def prepare_ImmHuman_our(data_root):
     label_key = 'CellType'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmHuman.h5ad')
+    adata = sc.read_h5ad('/home/oovcharenko/Olga_Data/ImmHuman.h5ad')
+
+    _, c = np.unique(adata.obs[batch_key], return_inverse=True)
+    adata.obs[batch_key] = pd.Categorical(c)
 
     X = sps.csr_matrix(adata.layers['counts'].T)  # gene by cell
 
@@ -856,7 +859,10 @@ def prepare_PBMC_our(data_root):
     label_key = 'CellType'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/PBMC.h5ad')
+    adata = sc.read_h5ad('/home/oovcharenko/Olga_Data/PBMC.h5ad')
+
+    _, c = np.unique(adata.obs[batch_key], return_inverse=True)
+    adata.obs[batch_key] = pd.Categorical(c)
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -869,30 +875,15 @@ def prepare_PBMC_our(data_root):
 
     return X, gene_name, cell_name, df_meta
 
-def prepare_sapiens(data_root):
-    batch_key = '_scvi_batch'
-    label_key = 'broad_cell_class'
-
-    # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/sapiens.h5ad')
-
-    X = adata.X.T  # gene by cell
-
-    gene_name = adata.var_names
-    cell_name = adata.obs_names.values
-    df_meta = adata.obs[[batch_key, label_key]].copy()
-
-    df_meta[configs.batch_key] = df_meta[batch_key].astype('category')
-    df_meta[configs.label_key] = df_meta[label_key].astype('category')
-
-    return X, gene_name, cell_name, df_meta
-
 def prepare_Pancreas_our(data_root):
-    batch_key = 'batchlb'
+    batch_key = 'batch'
     label_key = 'celltype'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/Pancreas.h5ad')
+    adata = sc.read_h5ad('/home/oovcharenko/Olga_Data/Pancreas.h5ad')
+
+    _, c = np.unique(adata.obs[batch_key], return_inverse=True)
+    adata.obs[batch_key] = pd.Categorical(c)
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -910,7 +901,10 @@ def prepare_ImmuneAtlas_our(data_root):
     label_key = 'cell_type'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmuneAtlas.h5ad')
+    adata = sc.read_h5ad('/home/oovcharenko/Olga_Data/ImmuneAtlas.h5ad')
+
+    _, c = np.unique(adata.obs[batch_key], return_inverse=True)
+    adata.obs[batch_key] = pd.Categorical(c)
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -928,9 +922,12 @@ def prepare_MCA_our(data_root):
     label_key = 'CellType'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/MCA.h5ad')
+    adata = sc.read_h5ad('/home/oovcharenko/Olga_Data/MCA.h5ad')
 
     X = adata.layers['counts'].A.T  # gene by cell
+    
+    _, c = np.unique(adata.obs[batch_key], return_inverse=True)
+    adata.obs[batch_key] = pd.Categorical(c)
 
     gene_name = adata.var_names
     cell_name = adata.obs_names.values
@@ -946,7 +943,10 @@ def prepare_Lung_our(data_root):
     label_key = 'cell_type'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/Lung.h5ad')
+    adata = sc.read_h5ad('/home/oovcharenko/Olga_Data/Lung.h5ad')
+
+    _, c = np.unique(adata.obs[batch_key], return_inverse=True)
+    adata.obs[batch_key] = pd.Categorical(c)
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -1001,7 +1001,6 @@ def prepare_dataset(data_dir):
                     'Lung': prepare_Lung_our,
                     'MCA': prepare_MCA_our,
                     'PBMC': prepare_PBMC_our,
-                    'sapiens': prepare_sapiens,
     }
 
     # dataset 3 

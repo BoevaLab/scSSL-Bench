@@ -4,16 +4,16 @@ hydra:
     params:
       random_seed: range(20, 22)
       +model: barlowtwins, byol, moco, nnclr, simclr, simsiam, vicreg
-      +data: mouse, immune, lung, pbmc, pancreas, immune_atlas
+      +data: mouse, immune, pbmc, pancreas, lung, immune_atlas
       +augmentation: clear_pipeline
       model.hidden_dim: 64
-      model.training.max_epochs: 100
+      model.training.max_epochs: 200
       ++model.multimodal: False
       data.n_hvgs: 4000
-      model.predict_projection: False
+      model.predict_projection: True
       logging.project: architecture-ablation_vol4
   job:
     name: ${random_seed}
   sweep:
-    dir: unimodal/
-    subdir: ${data.dname}/${model.model}/${random_seed}
+    dir: projection/
+    subdir: ${data.dname}/${model.model}/base/temp_${model.predict_projection}/${random_seed}

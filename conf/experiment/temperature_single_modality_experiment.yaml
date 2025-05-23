@@ -4,7 +4,7 @@ hydra:
     params:
       random_seed: range(20, 22)
       +model: nnclr, moco, simclr
-      +data: mouse, immune # pancreas, lung, pbmc, immune, immune_atlas
+      +data: immune, pbmc # pancreas, lung, pbmc, immune, immune_atlas
       +augmentation: clear_pipeline
       model.hidden_dim: 64
       model.training.max_epochs: 200

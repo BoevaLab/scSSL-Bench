@@ -7,9 +7,6 @@ hydra:
       model.training.max_epochs: 200
       +model: barlowtwins, byol, moco, nnclr, simclr, simsiam, vicreg
       +data: mouse
-      data.n_hvgs: 4000
-      ++model.multimodal: False
-      model.predict_projection: False
       +augmentation: clear_pipeline
       augmentation.mnn.apply_prob: 0.5
       augmentation.crossover.apply_prob: 0

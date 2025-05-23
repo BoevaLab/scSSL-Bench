@@ -56,7 +56,7 @@ class NNCLR(pl.LightningModule):
 
             self.criterion = NTXentLoss(temperature=temperature)
 
-    def forward(self, x):
+    def forward(self, x, bid):
         if self.multimodal:
             y = self.backbone(x[0]).flatten(start_dim=1)
             z = self.projection_head(y)
@@ -69,7 +69,7 @@ class NNCLR(pl.LightningModule):
             z2 = z2.detach()
             return z, p, z2, p2
         else:
-            y = self.backbone(x).flatten(start_dim=1)
+            y = self.backbone(x, bid).flatten(start_dim=1)
             z = self.projection_head(y)
             p = self.prediction_head(z)
             z = z.detach()
@@ -116,6 +116,10 @@ class NNCLR(pl.LightningModule):
                 return z0, z1_0, z1_1
             else:
                 raise Exception("Invalid path")
+    
+    def predict_dsbn(self, x, bid):
+        with torch.no_grad():
+            return self.backbone(x, bid)
 
     def training_step(self, batch, batch_idx):
         if self.multimodal:
@@ -159,13 +163,14 @@ class NNCLR(pl.LightningModule):
 
         else:
             x0, x1 = batch[0]
-            z0, p0 = self.forward(x0)
-            z1, p1 = self.forward(x1)
+            bid0, bid1 = batch[2]
+            z0, p0 = self.forward(x0, bid0)
+            z1, p1 = self.forward(x1, bid1)
             z0 = self.memory_bank(z0, update=False)
             z1 = self.memory_bank(z1, update=True)
             # TODO: symmetrize the loss?
             loss = 0.5 * (self.criterion(z0, p1) + self.criterion(z1, p0))
-        
+        self.log('train_loss', loss)
         return loss
 
     def configure_optimizers(self):

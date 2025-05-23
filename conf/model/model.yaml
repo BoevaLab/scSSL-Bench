@@ -9,3 +9,6 @@ multimodal: True
 integrate: add
 predict_only_rna: False
 predict_projection: False 
+
+num_domains: [0]
+dsbn: False

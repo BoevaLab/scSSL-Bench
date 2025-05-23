@@ -21,11 +21,14 @@ _BATCH_METRICS = BatchCorrection(graph_connectivity=True,
                                  silhouette_batch=True
                                  )
 
-def infer_embedding(model, val_loader):
+def infer_embedding(model, val_loader, dsbn: bool = False):
     outs = []
     for x in val_loader:
         with torch.no_grad():
-            outs.append(model.predict(x[0]))
+            if dsbn:
+                outs.append(model.predict_dsbn(x[0], x[2])) 
+            else:
+                outs.append(model.predict(x[0]))
     
     embedding = torch.concat(outs)
     embedding = np.array(embedding)
@@ -62,44 +65,41 @@ def infer_projector_embedding(model, val_loader):
 
 
 def evaluate_model(model, adata, dataset, batch_size, num_workers, logger, embedding_save_path,
-                   batch_key="batchlb", cell_type_label="CellType", umap_plot=""):
+                   batch_key="batchlb", cell_type_label="CellType", umap_plot="", dsbn=False):
     val_loader = torch.utils.data.DataLoader(
                     dataset,
                     batch_size=batch_size,
                     num_workers=num_workers,
                     shuffle=False,
                     drop_last=False)
-    embedding = infer_embedding(model, val_loader)
+    embedding = infer_embedding(model, val_loader, dsbn=dsbn)
     np.savez_compressed(embedding_save_path, embedding)
 
     logger.info(f"Inferred embedding of shape {embedding.shape}")
     adata.obsm["Embedding"] = embedding
 
-    return None, None
+    sc.pp.neighbors(adata, use_rep="Embedding", metric="cosine")
+    sc.tl.umap(adata, min_dist=0.1)
+    sc.pl.umap(adata, color=["CellType", "batch"], legend_fontweight='light') 
+    plt.savefig(umap_plot)
+    try:
+        bm = Benchmarker(
+                    adata,
+                    batch_key=batch_key,
+                    label_key=cell_type_label,
+                    embedding_obsm_keys=["Embedding"],
+                    bio_conservation_metrics=_BIO_METRICS,
+                    batch_correction_metrics=_BATCH_METRICS,
+                    n_jobs=num_workers,
+                )
+        bm.benchmark()
+        a = bm.get_results(False, True)
+        results = a[:1].astype(float).round(4)
+    except Exception as error:
+        results = None
+        logger.info(".. An exception occured while evaluating:", error)
 
-    # sc.pp.neighbors(adata, use_rep="Embedding", metric="cosine")
-    # sc.tl.umap(adata, min_dist=0.1)
-    # sc.pl.umap(adata, color=["CellType", batch_key], legend_fontweight='light') 
-    # plt.savefig(umap_plot)
-    
-    # try:
-    #     bm = Benchmarker(
-    #                 adata,
-    #                 batch_key=batch_key,
-    #                 label_key=cell_type_label,
-    #                 embedding_obsm_keys=["Embedding"],
-    #                 bio_conservation_metrics=_BIO_METRICS,
-    #                 batch_correction_metrics=_BATCH_METRICS,
-    #                 n_jobs=num_workers,
-    #             )
-    #     bm.benchmark()
-    #     a = bm.get_results(False, True)
-    #     results = a[:1].astype(float).round(4)
-    # except Exception as error:
-    #     results = None
-    #     logger.info(".. An exception occured while evaluating:", error)
-
-    # return results, embedding
+    return results, embedding
 
 def recalculate_results(adata, embedding, num_workers,
                    batch_key="batchlb", cell_type_label="CellType",):

@@ -6,7 +6,7 @@ from lightly.loss.ntx_ent_loss import NTXentLoss
 from lightly.models.modules.heads import SimCLRProjectionHead
 
 from utils.train_utils import *
-from models.model_utils import get_backbone, get_backbone_deep, clip_loss
+from models.model_utils import get_backbone_deep, clip_loss
 
 import lightning as pl
 import numpy as np
@@ -41,7 +41,7 @@ class SimCLR(pl.LightningModule):
             self.projection_head = SimCLRProjectionHead(hidden_dim, hidden_dim, out_dim)
             self.criterion = NTXentLoss(temperature=temperature)
 
-    def forward(self, x):
+    def forward(self, x, bid):
         if self.multimodal:
             x1 = self.backbone1(x[0]).flatten(start_dim=1)
             z1 = self.projection_head1(x1)
@@ -51,7 +51,7 @@ class SimCLR(pl.LightningModule):
             return z1, z2
 
         else:
-            x = self.backbone(x).flatten(start_dim=1)
+            x = self.backbone(x, bid).flatten(start_dim=1)
             z = self.projection_head(x)
             return z
     
@@ -75,6 +75,10 @@ class SimCLR(pl.LightningModule):
                 return z0
             else:
                 return self(x) if self.predict_projection else self.backbone(x)
+    
+    def predict_dsbn(self, x, bid):
+        with torch.no_grad():
+            return self.backbone(x, bid)
     
     def predict_separate(self, x):
         with torch.no_grad():
@@ -134,11 +138,13 @@ class SimCLR(pl.LightningModule):
 
         else:
             x0, x1 = batch[0]
-            z0 = self.forward(x0)
-            z1 = self.forward(x1)
+            bid0, bid1 = batch[2]
+            z0 = self.forward(x0, bid0)
+            z1 = self.forward(x1, bid1)
             # TODO: symmetrize the loss?
             loss = self.criterion(z0, z1)
-
+        
+        self.log('train_loss', loss)
         return loss
     
     def configure_optimizers(self):

@@ -1,5 +1,5 @@
 defaults:
   - data.yaml
 
-data_path: "/home/baunsgaard/scBench/scButterfly/Olga_Data/PBMC"
+data_path: "/home/oovcharenko/Olga_Data/PBMC"
 dname: "PBMC"

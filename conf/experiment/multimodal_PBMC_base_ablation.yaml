@@ -2,8 +2,8 @@
 hydra:
   sweeper:
     params:
-      random_seed: range(20, 22)
-      +model: simclr, simsiam, vicreg, nnclr, byol, barlowtwins
+      random_seed: range(21, 22)
+      +model: simclr, moco, simsiam, vicreg, nnclr, byol, barlowtwins
       +data: pbmc_multimodal
       +augmentation: clear_pipeline
       model.integrate: concat

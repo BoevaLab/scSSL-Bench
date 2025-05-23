@@ -7,7 +7,7 @@ from lightly.loss.negative_cosine_similarity import NegativeCosineSimilarity
 from lightly.models.modules.heads import SimSiamPredictionHead, SimSiamProjectionHead
 
 from utils.train_utils import *
-from models.model_utils import get_backbone, get_backbone_deep, clip_loss
+from models.model_utils import get_backbone_deep, clip_loss
 
 import lightning as pl
 import numpy as np
@@ -52,7 +52,7 @@ class SimSiam(pl.LightningModule):
             self.prediction_head = SimSiamPredictionHead(out_dim, hidden_dim_2, out_dim)
             self.criterion = NegativeCosineSimilarity()
 
-    def forward(self, x):
+    def forward(self, x, bid):
         if self.multimodal:
             f = self.backbone(x[0]).flatten(start_dim=1)
             z = self.projection_head(f)
@@ -65,7 +65,7 @@ class SimSiam(pl.LightningModule):
             z2 = z2.detach()
             return z, p, z2, p2
         else:
-            f = self.backbone(x).flatten(start_dim=1)
+            f = self.backbone(x, bid).flatten(start_dim=1)
             z = self.projection_head(f)
             p = self.prediction_head(z)
             z = z.detach()
@@ -112,27 +112,10 @@ class SimSiam(pl.LightningModule):
                 return z0, z1_0, z1_1
             else:
                 raise Exception("Invalid path")
-
-    def predict_separate(self, x):
+    
+    def predict_dsbn(self, x, bid):
         with torch.no_grad():
-            if self.multimodal:
-                if self.predict_projection:
-                    z1_0, _, z1_1, _ = self(x)
-                else:
-                    z1_0, z1_1 = self.backbone(x[0]), self.backbone2(x[1])
-                
-                if self.predict_only_rna:
-                    raise Exception("Invalid path")
-
-                if self.integrate == "add":
-                    z0 = z1_0 + z1_1
-                elif self.integrate == "mean":
-                    z0 = (z1_0 + z1_1) / 2
-                else:
-                    z0 = torch.cat((z1_0, z1_1), 1)
-                return z0, z1_0, z1_1
-            else:
-                raise Exception("Invalid path")
+            return self.backbone(x, bid)
 
     def training_step(self, batch, batch_idx):
         if self.multimodal:
@@ -170,11 +153,12 @@ class SimSiam(pl.LightningModule):
 
         else:
             x0, x1 = batch[0]
-            z0, p0 = self.forward(x0)
-            z1, p1 = self.forward(x1)
+            bid0, bid1 = batch[2]
+            z0, p0 = self.forward(x0, bid0)
+            z1, p1 = self.forward(x1, bid1)
             # TODO: symmetrize the loss? --> Using the first term below is symmetry! 
             loss = 0.5 * (self.criterion(z0, p1) + self.criterion(z1, p0))
-        
+        self.log('train_loss', loss)
         return loss
     
     def configure_optimizers(self):

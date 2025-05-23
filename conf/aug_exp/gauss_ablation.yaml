@@ -2,15 +2,14 @@
 hydra:
   sweeper:
     params:
-      random_seed: range(20, 22)
+      random_seed: range(20, 25)
       model.hidden_dim: 64
       model.training.max_epochs: 200
-      +model: moco, simclr, vicreg
-      +data: mouse, immune
-      data.n_hvgs: 4000
-      ++model.multimodal: False
-      model.predict_projection: False
+      +model: barlowtwins, byol, moco, nnclr, simclr, simsiam, vicreg
+      +data: mouse
       +augmentation: clear_pipeline
+      augmentation.gauss.noise_percentage: choice(0.1, 0.3, 0.5, 0.7, 0.9)
+      augmentation.gauss.sigma: choice(0.2, 0.4, 0.6)
       logging.project: architecture-ablation_vol1
   job:
     name: ${random_seed}

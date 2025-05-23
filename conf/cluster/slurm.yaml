@@ -6,7 +6,7 @@ hydra:
   launcher:
     partition: gpu-2d
     gpus_per_node: 1
-    tasks_per_node: 14
+    tasks_per_node: 16
     timeout_min: 1000
     nodes: 1
     # constraint: "6000"

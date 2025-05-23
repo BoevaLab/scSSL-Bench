@@ -81,7 +81,7 @@ def evaluate_model(adata, batch_key, cell_type_label):
     return results
 
 args = get_args()
-adata_path = args.data # "/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmuneAtlas.h5ad"
+adata_path = args.data # "/home/oovcharenko/Olga_Data/ImmuneAtlas.h5ad"
 epochs = args.epoch
 batch_key = args.batch
 cell_type = args.celltype

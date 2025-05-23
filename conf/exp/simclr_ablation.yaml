@@ -2,18 +2,16 @@
 hydra:
   sweeper:
     params:
-      random_seed: range(20, 22)
-      model.hidden_dim: choice(8, 16, 32, 64, 128, 256, 512)
+      random_seed: range(20, 25)
+      model.hidden_dim: choice(8, 16, 32, 64)
+      model.factor: choice(1, 2, 4)
       model.training.max_epochs: 200
       +model: simclr
-      +data: mouse, immune
-      ++model.multimodal: False
-      model.predict_projection: False
-      data.n_hvgs: 4000
+      +data: mouse
       +augmentation: clear_pipeline
       logging.project: architecture-ablation_vol1
   job:
     name: ${random_seed}
   sweep:
-    dir: repr_dims_5h/
-    subdir: ${data.dname}/${model.model}/${model.hidden_dim}/${random_seed}
+    dir: ablation-db-2/architecture-ablation/
+    subdir: ${data.dname}/${model.model}/${model.hidden_dim}/${model.factor}/${random_seed}

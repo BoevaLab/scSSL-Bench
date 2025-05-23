@@ -10,10 +10,12 @@ hydra:
       model.training.max_epochs: 100
       ++model.multimodal: False
       data.n_hvgs: 4000
-      model.predict_projection: True
+      ++model.predict_projection: False
+      model.multimodal: False
       logging.project: architecture-ablation_vol4
+      ++model.dsbn: True
   job:
     name: ${random_seed}
   sweep:
-    dir: unimodal_projection/
-    subdir: ${data.dname}/${model.model}/${random_seed}
+    dir: dsbn_try/
+    subdir: ${data.dname}/${model.model}/base/${model.predict_projection}/${random_seed}

@@ -23,14 +23,10 @@ import numpy as np
 import random
 import lightning as pl
 
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 _LOGGER = logging.getLogger(__name__)
 _celltype_key = "CellType" #cfg["data"]["celltype_key"]
 _batch_key = "batchlb" #cfg["data"]["batch_key"]
-
-# os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 
 def load_data(config) -> sc.AnnData:
@@ -135,7 +131,6 @@ def reset_random_seeds(seed):
     torch.use_deterministic_algorithms(True)
     torch.cuda.manual_seed(seed)
     torch.manual_seed(seed)
-    torch.set_float32_matmul_precision('high')
     os.environ["PYTHONHASHSEED"] = str(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     _LOGGER.info(f"Set random seed to {seed}")    
@@ -220,13 +215,13 @@ def main(cfg: DictConfig):
                                             num_workers=4,
                                             logger=_LOGGER,
                                             embedding_save_path=results_dir.joinpath("embedding.npz"),
-                                            umap_plot=results_dir.joinpath("plot.png")
+                                            umap_plot=results_dir.joinpath("plot.png"),
+                                            dsbn=cfg["model"]["dsbn"]
                                         )
-        # try:
-        #     _LOGGER.info(f"{results.to_dict()}")
-        #     results.to_csv(results_dir.joinpath("evaluation_metrics.csv"), index=None)
-        # except:
-        #     _LOGGER.info("Something went wrong with the benchmark.")
+        try:
+            results.to_csv(results_dir.joinpath("evaluation_metrics.csv"), index=None)
+        except:
+            _LOGGER.info("Something went wrong with the benchmark.")
     
     elif cfg["data"]["holdout_batch"] is not None:
         _LOGGER.info("Running QR-Mapper-Inference.")
@@ -243,7 +238,6 @@ def main(cfg: DictConfig):
                 fltr = [pm.adata.obs['batchlb'][i] in cfg["data"]["holdout_batch"] for i in range(len(pm.adata))]
             
             train_adata = ad
-            print(fltr)
             val_adata = pm.adata[fltr]
 
             # Extended predict: only RNA together with full and modality prediction
@@ -270,21 +264,12 @@ def main(cfg: DictConfig):
             
             train_adata = ad
             val_adata = pm.adata[fltr]
-            clf_in, maavg_f1_in, acc_in, run_time_in = train_clf(model, train_adata, val_adata, ctype_key='CellType', exclude=False, umap_plot_train=results_dir.joinpath("plot_train_include.png"), umap_plot_test=results_dir.joinpath("plot_test_include.png"))
-
-            clf, maavg_f1, acc, run_time = train_clf(model, train_adata, val_adata, ctype_key='CellType', exclude=True, umap_plot_train=results_dir.joinpath("plot_train_exclude.png"), umap_plot_test=results_dir.joinpath("plot_test_exclude.png"))
-
-            results2 = pd.DataFrame([maavg_f1, acc, run_time, maavg_f1_in, acc_in, run_time_in], index=["Macro-F1", "Accuracy", "Run-Time", "Macro-F1-in", "Accuracy-in", "Run-Time-in"])
-            results2.to_csv(os.path.join(results_dir, "qr-results.csv"))
-            
-            print(f"MaAVG-F1: {maavg_f1}\nAccuracy: {acc} MaAVG-F1-in: {maavg_f1_in}\nAccuracy-in: {acc_in}")
-            _LOGGER.info(f"Finished Training of the QR-Mapper in {run_time} seconds MaAVG-F1: {maavg_f1}\nAccuracy: {acc} MaAVG-F1-in: {maavg_f1_in}\nAccuracy-in: {acc_in}.")
-            exit(0)
+            clf, maavg_f1, acc, run_time = train_clf(model, train_adata, val_adata, ctype_key='CellType')
 
         results = pd.DataFrame([maavg_f1, acc, run_time], index=["Macro-F1", "Accuracy", "Run-Time"])
         results.to_csv(os.path.join(results_dir, "qr-results.csv"))
         print(f"MaAVG-F1: {maavg_f1}\nAccuracy: {acc}")
-        _LOGGER.info(f"Finished Training of the QR-Mapper in {run_time} seconds MaAVG-F1: {maavg_f1}\nAccuracy: {acc}.")
+        _LOGGER.info(f"Finished Training of the QR-Mapper in {run_time} seconds.")
 
 
 if __name__ == "__main__":

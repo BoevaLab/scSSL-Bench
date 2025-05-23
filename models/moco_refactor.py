@@ -12,7 +12,7 @@ from lightly.transforms.moco_transform import MoCoV2Transform
 from lightly.utils.scheduler import cosine_schedule
 
 from utils.train_utils import *
-from models.model_utils import get_backbone, get_backbone_deep, clip_loss
+from models.model_utils import get_backbone_deep, clip_loss
 
 import lightning as pl
 import numpy as np
@@ -67,7 +67,7 @@ class MoCo(pl.LightningModule):
 
             self.criterion = NTXentLoss(temperature=temperature, memory_bank_size=(memory_bank_size, out_dim))
 
-    def forward(self, x):
+    def forward(self, x, bid):
         if self.multimodal:
             query = self.backbone(x[0]).flatten(start_dim=1)
             query = self.projection_head(query)
@@ -76,7 +76,7 @@ class MoCo(pl.LightningModule):
             query2 = self.projection_head2(query2)
             return query, query2
         else:
-            query = self.backbone(x).flatten(start_dim=1)
+            query = self.backbone(x, bid).flatten(start_dim=1)
             query = self.projection_head(query)
             return query
     
@@ -121,8 +121,13 @@ class MoCo(pl.LightningModule):
                 return z0, z1_0, z1_1
             else:
                 raise Exception("Invalid path")
+    
 
-    def forward_momentum(self, x):
+    def predict_dsbn(self, x, bid):
+        with torch.no_grad():
+            return self.backbone(x, bid)
+
+    def forward_momentum(self, x, bid):
         if self.multimodal:
             key = self.backbone_momentum(x[0]).flatten(start_dim=1)
             key = self.projection_head_momentum(key).detach()
@@ -131,7 +136,7 @@ class MoCo(pl.LightningModule):
             key2 = self.projection_head_momentum2(key2).detach()
             return key, key2
         else:
-            key = self.backbone_momentum(x).flatten(start_dim=1)
+            key = self.backbone_momentum(x, bid).flatten(start_dim=1)
             key = self.projection_head_momentum(key).detach()
             return key
 
@@ -174,10 +179,13 @@ class MoCo(pl.LightningModule):
             update_momentum(self.backbone, self.backbone_momentum, m=momentum)
             update_momentum(self.projection_head, self.projection_head_momentum, m=momentum)
             x_query, x_key = batch[0]
-            query = self.forward(x_query)
-            key = self.forward_momentum(x_key)
+            bid0, bid1 = batch[2]
+            query = self.forward(x_query, bid0)
+            key = self.forward_momentum(x_key, bid1)
             # TODO: symmetrize the loss?
             loss = self.criterion(query, key)
+
+            self.log('train_loss', loss)
             return loss
     
     def configure_optimizers(self):

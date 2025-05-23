@@ -68,7 +68,7 @@ class BYOL(pl.LightningModule):
             deactivate_requires_grad(self.projection_head_momentum)
             self.criterion = SymNegCosineSimilarityLoss()
 
-    def forward(self, x):
+    def forward(self, x, bid):
         if self.multimodal:
             y = self.backbone(x[0]).flatten(start_dim=1)
             z = self.projection_head(y)
@@ -80,12 +80,12 @@ class BYOL(pl.LightningModule):
             return p, p2
 
         else:
-            y = self.backbone(x).flatten(start_dim=1)
+            y = self.backbone(x, bid).flatten(start_dim=1)
             z = self.projection_head(y)
             p = self.prediction_head(z)
             return p
 
-    def forward_momentum(self, x):
+    def forward_momentum(self, x, bid):
         if self.multimodal:
             y = self.backbone_momentum(x[0]).flatten(start_dim=1)
             z = self.projection_head_momentum(y)
@@ -96,7 +96,7 @@ class BYOL(pl.LightningModule):
             z2 = z2.detach()
             return z, z2
         else:
-            y = self.backbone_momentum(x).flatten(start_dim=1)
+            y = self.backbone_momentum(x, bid).flatten(start_dim=1)
             z = self.projection_head_momentum(y)
             z = z.detach()
             return z
@@ -136,18 +136,20 @@ class BYOL(pl.LightningModule):
                 raise Exception("Invalid integration method.")
 
             loss = self.criterion((z0, p0), (z1, p1))
-            self.log('train_loss_ssl', loss)
             
         else:
             #(x0, x1), (id0, id1) = batch
             x0, x1 = batch[0]
-            p0 = self.forward(x0)
-            z0 = self.forward_momentum(x0)
-            p1 = self.forward(x1)
-            z1 = self.forward_momentum(x1)
+            bid0, bid1 = batch[2]
+            p0 = self.forward(x0, bid0)
+            z0 = self.forward_momentum(x0, bid0)
+            p1 = self.forward(x1, bid1)
+            z1 = self.forward_momentum(x1, bid1)
             # TODO: symmetrize the outputs of byol and calculate the loss
             loss = self.criterion((z0, p0), (z1, p1))
             self.log('train_loss_ssl', loss)
+        
+        self.log('train_loss', loss)
         return loss
     
     def predict(self, x):
@@ -170,6 +172,10 @@ class BYOL(pl.LightningModule):
                 return z0
             else:
                 return self(x) if self.predict_projection else self.backbone(x)
+    
+    def predict_dsbn(self, x, bid):
+        with torch.no_grad():
+            return self.backbone(x, bid)
 
     def predict_separate(self, x):
         with torch.no_grad():
