@@ -43,7 +43,7 @@ def train_qr_scVI(adata_ref, adata_query, batch_key, cell_type):
 
 
 # # ImmuneAtlas
-# adata_path = "/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmuneAtlas.h5ad"
+# adata_path = "ImmuneAtlas.h5ad"
 # batch_key = "batchlb"
 # cell_type = "cell_type"
 
@@ -61,7 +61,7 @@ def train_qr_scVI(adata_ref, adata_query, batch_key, cell_type):
 
 
 # Pancreas
-adata_path = "/home/baunsgaard/scBench/scButterfly/Olga_Data/Pancreas.h5ad"
+adata_path = "Pancreas.h5ad"
 batch_key = "batchlb"
 cell_type = "celltype"
 
