@@ -41,7 +41,7 @@ def preprocess_rna(
 batch_key = '_scvi_batch'
 label_key = 'cell_type'
 
-adata_RNA = sc.read_h5ad('Olga_Data/10df7690-6d10-4029-a47e-0f071bb2df83.h5ad')
+adata_RNA = sc.read_h5ad('10df7690-6d10-4029-a47e-0f071bb2df83.h5ad')
 
 adata_RNA, cells_subset = preprocess_rna(adata_RNA, min_features = 0, is_hvg=True, batch_key=batch_key)
 
@@ -66,4 +66,4 @@ adata_RNA = adata_RNA[(adata_RNA.obs["broad_cell_class"] != "melanocyte")
 
 
 adata_RNA.obs['cell_type_l1'] = adata_RNA.obs['broad_cell_class']
-adata_RNA.write_h5ad(f'/home/baunsgaard/scBench/scButterfly/Olga_Data/sapiens.h5ad')
+adata_RNA.write_h5ad(f'sapiens.h5ad')

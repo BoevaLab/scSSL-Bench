@@ -838,7 +838,7 @@ def prepare_ImmHuman_our(data_root):
     label_key = 'CellType'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmHuman.h5ad')
+    adata = sc.read_h5ad('ImmHuman.h5ad')
 
     X = sps.csr_matrix(adata.layers['counts'].T)  # gene by cell
 
@@ -856,7 +856,7 @@ def prepare_PBMC_our(data_root):
     label_key = 'CellType'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/PBMC.h5ad')
+    adata = sc.read_h5ad('PBMC.h5ad')
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -874,7 +874,7 @@ def prepare_sapiens(data_root):
     label_key = 'broad_cell_class'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/sapiens.h5ad')
+    adata = sc.read_h5ad('sapiens.h5ad')
 
     X = adata.X.T  # gene by cell
 
@@ -892,7 +892,7 @@ def prepare_Pancreas_our(data_root):
     label_key = 'celltype'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/Pancreas.h5ad')
+    adata = sc.read_h5ad('Pancreas.h5ad')
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -910,7 +910,7 @@ def prepare_ImmuneAtlas_our(data_root):
     label_key = 'cell_type'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/ImmuneAtlas.h5ad')
+    adata = sc.read_h5ad('ImmuneAtlas.h5ad')
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -928,7 +928,7 @@ def prepare_MCA_our(data_root):
     label_key = 'CellType'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/MCA.h5ad')
+    adata = sc.read_h5ad('MCA.h5ad')
 
     X = adata.layers['counts'].A.T  # gene by cell
 
@@ -946,7 +946,7 @@ def prepare_Lung_our(data_root):
     label_key = 'cell_type'
 
     # ensure row is gene
-    adata = sc.read_h5ad('/home/baunsgaard/scBench/scButterfly/Olga_Data/Lung.h5ad')
+    adata = sc.read_h5ad('Lung.h5ad')
 
     X = adata.layers['counts'].A.T  # gene by cell
 
